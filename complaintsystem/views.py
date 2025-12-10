@@ -6,6 +6,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth import authenticate
 
 from .serializers import UserSerializer,ComplaintSerializer
 from .models import User,Complaint,Department
@@ -19,7 +20,7 @@ class ProxyUser(User):
     def is_authenticated(self):
         return True
     
-class CustomJWTAuthentication(JWTAuthentication):
+class CustomJWTAuthentication(JWTAuthentication):   
     def get_user(self,validated_token):
         user_id = validated_token.get("user_id")
         try:
@@ -28,7 +29,28 @@ class CustomJWTAuthentication(JWTAuthentication):
             raise InvalidToken({'user not found'})
         
 
-        
+
+# def login(request):
+
+#     email = request.data.get("email")
+#     password = request.data.get("password")
+
+#     try:
+#         user = User.objects.get(email=email)
+#     except User.DoesNotExist:
+#         return Response("Email Not Found", status=404)
+
+#     # Django handles hashed password check
+#     user = authenticate(username=user.username, password=password)
+
+#     if user is None:
+#         return Response("Invalid Password", status=400)
+
+#     token = RefreshToken.for_user(user).access_token
+  
+#     return Response({"token": str(token)}, status=200)
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 
